@@ -1224,10 +1224,16 @@
                 </div>
 
                 <h3 style="margin-top: 30px; margin-bottom: 15px; color: #1e40af;">Statistics Cards</h3>
+                <p style="color: #64748b; margin-bottom: 15px; font-size: 14px;">
+                    💡 <strong>Note:</strong> "Total Students" and "Certifications" are auto-calculated. Check "Override" to set custom values.
+                </p>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Total Students - Value</label>
-                        <input type="text" id="editTotalStudents" placeholder="Auto-calculated">
+                        <label>
+                            <input type="checkbox" id="overrideTotalStudents" onchange="toggleOverride('totalStudents')"> 
+                            Override Total Students
+                        </label>
+                        <input type="text" id="editTotalStudents" placeholder="Auto-calculated" disabled>
                     </div>
                     <div class="form-group">
                         <label>Total Students - Label</label>
@@ -1242,8 +1248,11 @@
                         <input type="text" id="editActiveCoursesLabel" value="Active Courses">
                     </div>
                     <div class="form-group">
-                        <label>Certifications - Value</label>
-                        <input type="text" id="editCertifications" placeholder="Auto-calculated">
+                        <label>
+                            <input type="checkbox" id="overrideCertifications" onchange="toggleOverride('certifications')"> 
+                            Override Certifications
+                        </label>
+                        <input type="text" id="editCertifications" placeholder="Auto-calculated" disabled>
                     </div>
                     <div class="form-group">
                         <label>Certifications - Label</label>
@@ -1311,11 +1320,11 @@
         let notifications = JSON.parse(localStorage.getItem('notifications')) || [
             {
                 id: 1,
-                title: "New Batch for O Level Course Starting June 1st",
-                content: "We are pleased to announce that a new batch for O Level (Foundation Course in IT) will commence from June 1st, 2026. Limited seats available. Early bird discount of 10% for registrations before May 31st.",
+                title: "CCC Course March Batch - Examination Form Fill Up",
+                content: "Attention all CCC (Course on Computer Concepts) March Batch students! The examination form fill-up is now open. All enrolled students must submit their examination forms on or before 31st May 2026. Late submissions will not be accepted. Please visit the centre during working hours with your Registration ID and fee payment receipt. For any queries, contact the administration office.",
                 priority: "important",
-                category: "Admission",
-                date: "2026-05-20",
+                category: "Examination",
+                date: "2026-05-25",
                 link: ""
             },
             {
@@ -1340,9 +1349,13 @@
         let homePageSettings = JSON.parse(localStorage.getItem('homePageSettings')) || {
             description: "NIELIT (National Institute of Electronics & Information Technology) offers quality IT education and certification programs. Our Phayeng study centre provides comprehensive computer courses, certification programs, and professional training to empower students and professionals.",
             totalStudentsLabel: "Total Students",
+            totalStudentsValue: "",
+            overrideTotalStudents: false,
             activeCoursesLabel: "Active Courses",
             activeCoursesValue: "12",
             certificationsLabel: "Certifications Issued",
+            certificationsValue: "",
+            overrideCertifications: false,
             placementRateLabel: "Placement Rate",
             placementRateValue: "85%",
             phone: "",
@@ -2288,6 +2301,32 @@
             document.getElementById('certificationsLabel').textContent = homePageSettings.certificationsLabel;
             document.getElementById('placementRateLabel').textContent = homePageSettings.placementRateLabel;
             document.getElementById('placementRate').textContent = homePageSettings.placementRateValue;
+            
+            // Use override values if set, otherwise use actual counts
+            if (homePageSettings.overrideTotalStudents && homePageSettings.totalStudentsValue) {
+                document.getElementById('totalStudents').textContent = homePageSettings.totalStudentsValue;
+            } else {
+                document.getElementById('totalStudents').textContent = registrations.length;
+            }
+            
+            if (homePageSettings.overrideCertifications && homePageSettings.certificationsValue) {
+                document.getElementById('certifications').textContent = homePageSettings.certificationsValue;
+            } else {
+                document.getElementById('certifications').textContent = registrations.filter(r => r.status === 'Approved').length;
+            }
+        }
+
+        function toggleOverride(field) {
+            const checkbox = document.getElementById('override' + field.charAt(0).toUpperCase() + field.slice(1));
+            const input = document.getElementById('edit' + field.charAt(0).toUpperCase() + field.slice(1));
+            
+            if (checkbox.checked) {
+                input.disabled = false;
+                input.focus();
+            } else {
+                input.disabled = true;
+                input.value = '';
+            }
         }
 
         function openHomeEditor() {
@@ -2306,6 +2345,15 @@
             document.getElementById('editTwitter').value = homePageSettings.twitter || '';
             document.getElementById('editInstagram').value = homePageSettings.instagram || '';
             document.getElementById('editYoutube').value = homePageSettings.youtube || '';
+            
+            // Set override checkboxes and values
+            document.getElementById('overrideTotalStudents').checked = homePageSettings.overrideTotalStudents || false;
+            document.getElementById('editTotalStudents').disabled = !homePageSettings.overrideTotalStudents;
+            document.getElementById('editTotalStudents').value = homePageSettings.totalStudentsValue || '';
+            
+            document.getElementById('overrideCertifications').checked = homePageSettings.overrideCertifications || false;
+            document.getElementById('editCertifications').disabled = !homePageSettings.overrideCertifications;
+            document.getElementById('editCertifications').value = homePageSettings.certificationsValue || '';
             
             document.getElementById('homeEditorModal').classList.add('active');
         }
@@ -2333,6 +2381,13 @@
             homePageSettings.twitter = document.getElementById('editTwitter').value;
             homePageSettings.instagram = document.getElementById('editInstagram').value;
             homePageSettings.youtube = document.getElementById('editYoutube').value;
+            
+            // Save override settings
+            homePageSettings.overrideTotalStudents = document.getElementById('overrideTotalStudents').checked;
+            homePageSettings.totalStudentsValue = document.getElementById('editTotalStudents').value;
+            
+            homePageSettings.overrideCertifications = document.getElementById('overrideCertifications').checked;
+            homePageSettings.certificationsValue = document.getElementById('editCertifications').value;
             
             localStorage.setItem('homePageSettings', JSON.stringify(homePageSettings));
             
