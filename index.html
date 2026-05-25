@@ -568,8 +568,11 @@
 
         <!-- Home Tab -->
         <div id="home" class="tab-content active">
-            <h2>Welcome to NIELIT Study Centre Phayeng</h2>
-            <p style="margin: 20px 0; color: #64748b; line-height: 1.6;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Welcome to NIELIT Study Centre Phayeng</h2>
+                <button class="btn btn-primary" onclick="openHomeEditor()" id="editHomeBtn" style="display: none;">✏️ Edit Home Page</button>
+            </div>
+            <p id="homeDescription" style="margin: 20px 0; color: #64748b; line-height: 1.6;">
                 NIELIT (National Institute of Electronics & Information Technology) offers quality IT education and certification programs. 
                 Our Phayeng study centre provides comprehensive computer courses, certification programs, and professional training to empower students and professionals.
             </p>
@@ -577,19 +580,19 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3 id="totalStudents">0</h3>
-                    <p>Total Students</p>
+                    <p id="totalStudentsLabel">Total Students</p>
                 </div>
                 <div class="stat-card">
                     <h3 id="activeCourses">12</h3>
-                    <p>Active Courses</p>
+                    <p id="activeCoursesLabel">Active Courses</p>
                 </div>
                 <div class="stat-card">
                     <h3 id="certifications">0</h3>
-                    <p>Certifications Issued</p>
+                    <p id="certificationsLabel">Certifications Issued</p>
                 </div>
                 <div class="stat-card">
                     <h3 id="placementRate">85%</h3>
-                    <p>Placement Rate</p>
+                    <p id="placementRateLabel">Placement Rate</p>
                 </div>
             </div>
 
@@ -1206,6 +1209,101 @@
         </div>
     </div>
 
+    <!-- Home Page Editor Modal -->
+    <div id="homeEditorModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2>📝 Edit Home Page</h2>
+                <button class="close-modal" onclick="closeHomeEditor()">&times;</button>
+            </div>
+            <form id="homeEditorForm">
+                <h3 style="margin-bottom: 15px; color: #1e40af;">Welcome Section</h3>
+                <div class="form-group">
+                    <label>Description Text</label>
+                    <textarea id="editHomeDescription" rows="4" placeholder="Enter home page description..."></textarea>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: #1e40af;">Statistics Cards</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Total Students - Value</label>
+                        <input type="text" id="editTotalStudents" placeholder="Auto-calculated">
+                    </div>
+                    <div class="form-group">
+                        <label>Total Students - Label</label>
+                        <input type="text" id="editTotalStudentsLabel" value="Total Students">
+                    </div>
+                    <div class="form-group">
+                        <label>Active Courses - Value</label>
+                        <input type="text" id="editActiveCourses" value="12">
+                    </div>
+                    <div class="form-group">
+                        <label>Active Courses - Label</label>
+                        <input type="text" id="editActiveCoursesLabel" value="Active Courses">
+                    </div>
+                    <div class="form-group">
+                        <label>Certifications - Value</label>
+                        <input type="text" id="editCertifications" placeholder="Auto-calculated">
+                    </div>
+                    <div class="form-group">
+                        <label>Certifications - Label</label>
+                        <input type="text" id="editCertificationsLabel" value="Certifications Issued">
+                    </div>
+                    <div class="form-group">
+                        <label>Placement Rate - Value</label>
+                        <input type="text" id="editPlacementRate" value="85%">
+                    </div>
+                    <div class="form-group">
+                        <label>Placement Rate - Label</label>
+                        <input type="text" id="editPlacementRateLabel" value="Placement Rate">
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: #1e40af;">Contact Information</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="editPhone" placeholder="Enter contact number">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="editEmail" placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label>Address Line 1</label>
+                        <input type="text" id="editAddress1" value="Phayeng High School Campus">
+                    </div>
+                    <div class="form-group">
+                        <label>Address Line 2</label>
+                        <input type="text" id="editAddress2" value="Imphal West, Manipur - 795146">
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: #1e40af;">Social Media Links (Optional)</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Facebook URL</label>
+                        <input type="url" id="editFacebook" placeholder="https://facebook.com/yourpage">
+                    </div>
+                    <div class="form-group">
+                        <label>Twitter URL</label>
+                        <input type="url" id="editTwitter" placeholder="https://twitter.com/yourpage">
+                    </div>
+                    <div class="form-group">
+                        <label>Instagram URL</label>
+                        <input type="url" id="editInstagram" placeholder="https://instagram.com/yourpage">
+                    </div>
+                    <div class="form-group">
+                        <label>YouTube URL</label>
+                        <input type="url" id="editYoutube" placeholder="https://youtube.com/yourchannel">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success" style="margin-top: 20px;">💾 Save All Changes</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Data Storage
         let registrations = JSON.parse(localStorage.getItem('registrations')) || [];
@@ -1239,6 +1337,23 @@
                 link: ""
             }
         ];
+        let homePageSettings = JSON.parse(localStorage.getItem('homePageSettings')) || {
+            description: "NIELIT (National Institute of Electronics & Information Technology) offers quality IT education and certification programs. Our Phayeng study centre provides comprehensive computer courses, certification programs, and professional training to empower students and professionals.",
+            totalStudentsLabel: "Total Students",
+            activeCoursesLabel: "Active Courses",
+            activeCoursesValue: "12",
+            certificationsLabel: "Certifications Issued",
+            placementRateLabel: "Placement Rate",
+            placementRateValue: "85%",
+            phone: "",
+            email: "",
+            address1: "Phayeng High School Campus",
+            address2: "Imphal West, Manipur - 795146",
+            facebook: "",
+            twitter: "",
+            instagram: "",
+            youtube: ""
+        };
         let courses = [
             { name: 'O Level', duration: '12 months', fee: 15000, description: 'Foundation Course in IT' },
             { name: 'A Level', duration: '18 months', fee: 25000, description: 'Advanced Diploma in IT' },
@@ -1266,6 +1381,7 @@
             updateStats();
             loadPaymentsTable();
             loadNotifications();
+            loadHomePageSettings();
             
             // Save initial notifications
             if (!localStorage.getItem('notifications')) {
@@ -1532,6 +1648,7 @@
                 document.getElementById('adminPanel').style.display = 'block';
                 loadAdminData();
                 showAdminNotificationControls();
+                showAdminHomeControls();
                 loadPaymentsTable(); // Reload payments to show edit buttons
             } else {
                 alert('Invalid credentials! Default: admin/admin123');
@@ -1545,6 +1662,7 @@
             document.getElementById('adminUser').value = '';
             document.getElementById('adminPass').value = '';
             hideAdminNotificationControls();
+            hideAdminHomeControls();
             loadPaymentsTable(); // Reload payments to hide edit buttons
         }
 
@@ -1771,6 +1889,10 @@
             const editPaymentModal = document.getElementById('editPaymentModal');
             if (event.target === editPaymentModal) {
                 closeEditPayment();
+            }
+            const homeEditorModal = document.getElementById('homeEditorModal');
+            if (event.target === homeEditorModal) {
+                closeHomeEditor();
             }
         }
 
@@ -2155,6 +2277,78 @@
                 loadPaymentsTable();
                 updateStats();
             }
+        }
+
+        // Home Page Editor Functions
+        function loadHomePageSettings() {
+            document.getElementById('homeDescription').textContent = homePageSettings.description;
+            document.getElementById('totalStudentsLabel').textContent = homePageSettings.totalStudentsLabel;
+            document.getElementById('activeCoursesLabel').textContent = homePageSettings.activeCoursesLabel;
+            document.getElementById('activeCourses').textContent = homePageSettings.activeCoursesValue;
+            document.getElementById('certificationsLabel').textContent = homePageSettings.certificationsLabel;
+            document.getElementById('placementRateLabel').textContent = homePageSettings.placementRateLabel;
+            document.getElementById('placementRate').textContent = homePageSettings.placementRateValue;
+        }
+
+        function openHomeEditor() {
+            document.getElementById('editHomeDescription').value = homePageSettings.description;
+            document.getElementById('editTotalStudentsLabel').value = homePageSettings.totalStudentsLabel;
+            document.getElementById('editActiveCoursesLabel').value = homePageSettings.activeCoursesLabel;
+            document.getElementById('editActiveCourses').value = homePageSettings.activeCoursesValue;
+            document.getElementById('editCertificationsLabel').value = homePageSettings.certificationsLabel;
+            document.getElementById('editPlacementRateLabel').value = homePageSettings.placementRateLabel;
+            document.getElementById('editPlacementRate').value = homePageSettings.placementRateValue;
+            document.getElementById('editPhone').value = homePageSettings.phone || '';
+            document.getElementById('editEmail').value = homePageSettings.email || '';
+            document.getElementById('editAddress1').value = homePageSettings.address1;
+            document.getElementById('editAddress2').value = homePageSettings.address2;
+            document.getElementById('editFacebook').value = homePageSettings.facebook || '';
+            document.getElementById('editTwitter').value = homePageSettings.twitter || '';
+            document.getElementById('editInstagram').value = homePageSettings.instagram || '';
+            document.getElementById('editYoutube').value = homePageSettings.youtube || '';
+            
+            document.getElementById('homeEditorModal').classList.add('active');
+        }
+
+        function closeHomeEditor() {
+            document.getElementById('homeEditorModal').classList.remove('active');
+        }
+
+        // Home Editor Form Submit
+        document.getElementById('homeEditorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            homePageSettings.description = document.getElementById('editHomeDescription').value;
+            homePageSettings.totalStudentsLabel = document.getElementById('editTotalStudentsLabel').value;
+            homePageSettings.activeCoursesLabel = document.getElementById('editActiveCoursesLabel').value;
+            homePageSettings.activeCoursesValue = document.getElementById('editActiveCourses').value;
+            homePageSettings.certificationsLabel = document.getElementById('editCertificationsLabel').value;
+            homePageSettings.placementRateLabel = document.getElementById('editPlacementRateLabel').value;
+            homePageSettings.placementRateValue = document.getElementById('editPlacementRate').value;
+            homePageSettings.phone = document.getElementById('editPhone').value;
+            homePageSettings.email = document.getElementById('editEmail').value;
+            homePageSettings.address1 = document.getElementById('editAddress1').value;
+            homePageSettings.address2 = document.getElementById('editAddress2').value;
+            homePageSettings.facebook = document.getElementById('editFacebook').value;
+            homePageSettings.twitter = document.getElementById('editTwitter').value;
+            homePageSettings.instagram = document.getElementById('editInstagram').value;
+            homePageSettings.youtube = document.getElementById('editYoutube').value;
+            
+            localStorage.setItem('homePageSettings', JSON.stringify(homePageSettings));
+            
+            loadHomePageSettings();
+            closeHomeEditor();
+            
+            alert('✅ Home page updated successfully!');
+        });
+
+        // Show/Hide Admin Controls
+        function showAdminHomeControls() {
+            document.getElementById('editHomeBtn').style.display = 'block';
+        }
+
+        function hideAdminHomeControls() {
+            document.getElementById('editHomeBtn').style.display = 'none';
         }
     </script>
 </body>
